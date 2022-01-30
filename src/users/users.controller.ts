@@ -24,6 +24,10 @@ import { ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
 @Controller('users')
 export class UsersController {
   constructor(private userService: UsersService) {}
+  @Get('test')
+  getTest(): string {
+    return 'working';
+  }
 
   @UseGuards(JwtAuthGuard)
   @Roles(AuthRole.User)
