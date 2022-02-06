@@ -11,7 +11,7 @@ import { FileUploadModule } from './file-upload/file-upload.module';
 import { MailingServiceModule } from './mailing-service/mailing-service.module';
 import { MailerModule as NodeMailerModule } from '@nestjs-modules/mailer';
 import { ContentModule } from './content/content.module';
-
+import * as Joi from '@hapi/joi';
 @Module({
   imports: [
     UsersModule,
@@ -21,7 +21,14 @@ import { ContentModule } from './content/content.module';
       secret: `${process.env.SECRET}`,
       signOptions: { expiresIn: '1h' },
     }),
-    ConfigModule.forRoot(),
+    ConfigModule.forRoot({
+      validationSchema: Joi.object({
+        STRIPE_SECRET_KEY: Joi.string(),
+        STRIPE_CURRENCY: Joi.string(),
+        FRONTEND_URL: Joi.string(),
+        // ...
+      }),
+    }),
     FileUploadModule,
     NodeMailerModule.forRoot({
       transport: {

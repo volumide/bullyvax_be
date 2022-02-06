@@ -10,6 +10,7 @@ import {
   BelongsTo,
 } from 'sequelize-typescript';
 import { ApiProperty } from '@nestjs/swagger';
+// import { IsString, IsNotEmpty, IsNumber } from 'class';
 
 @Table
 export class User extends Model<User> {
@@ -181,6 +182,14 @@ export class UserRole extends Model<UserRole> {
   @AllowNull(false)
   @Column
   isPrimary: boolean;
+}
+
+export class CreateChargeDto {
+  @ApiProperty()
+  paymentMethodId: string;
+
+  @ApiProperty()
+  amount: number;
 }
 
 export class UserResponse {

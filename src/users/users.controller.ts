@@ -16,14 +16,19 @@ import {
   UserDto,
   UserResponse,
   UserUpdateDto,
+  CreateChargeDto,
 } from './user.entity';
 import { UsersService } from './users.service';
+import StripeService from '../stripe/stripe.service';
 import { AuthRole, Roles } from '../auth/roles.decorator';
 import { ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
 
 @Controller('users')
 export class UsersController {
-  constructor(private userService: UsersService) {}
+  constructor(
+    private userService: UsersService,
+    private stripeService: StripeService,
+  ) {}
   @Get('test')
   getTest(): string {
     return 'working';
@@ -44,8 +49,22 @@ export class UsersController {
     return this.userService.getAllUsers(...args);
   }
 
+  @Post('charge-user')
+  @ApiBearerAuth('Authorization')
+  async createCharge(@Body() charge: CreateChargeDto) {
+    await this.stripeService.charge(
+      charge.amount,
+      charge.paymentMethodId,
+      charge.stripeID,
+    );
+  }
+
   @Post('create-user')
-  registerUser(@Body() user: UserDto): Promise<any> {
+  async registerUser(@Body() user: UserDto): Promise<any> {
+    const stripeCustomer = await this.stripeService.createCustomer(
+      `${user.first_name} ${user.last_name}`,
+      user.email,
+    );
     return this.userService.registerUser(user);
   }
 

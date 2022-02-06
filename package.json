@@ -23,6 +23,7 @@
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
+    "@hapi/joi": "^17.1.1",
     "@nestjs-modules/mailer": "^1.6.0",
     "@nestjs/common": "^7.0.0",
     "@nestjs/config": "^0.6.1",
@@ -44,6 +45,7 @@
     "rxjs": "^6.6.3",
     "sequelize": "^5.22.3",
     "sequelize-typescript": "^1.1.0",
+    "stripe": "^8.202.0",
     "swagger-ui-express": "^4.1.6",
     "uuid": "^8.3.2"
   },
