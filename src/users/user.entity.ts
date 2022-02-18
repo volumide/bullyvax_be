@@ -264,9 +264,6 @@ export class UserDto {
 
   @ApiProperty()
   password: string;
-
-  @ApiProperty()
-  stripe_id: string;
 }
 
 export class UserUpdateDto {

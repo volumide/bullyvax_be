@@ -35,7 +35,6 @@ export interface UserInfo {
   entity_name?: string;
   quantity?: string;
   user?: any;
-  stripe_id?: any;
 }
 
 @Injectable()
@@ -92,10 +91,10 @@ export class UsersService {
     } else {
       userInfo.password = await bcrypt.hash('dfdtgt567y', 10);
     }
-    const stripeId = await this.stripeClient.customers.create({
-      email: userInfo.email,
-    });
-    userInfo.stripe_id = stripeId;
+    // const stripeId = await this.stripeClient.customers.create({
+    //   email: userInfo.email,
+    // });
+    // userInfo.stripe_id = stripeId;
     const userRole = new UserRole({
       role_id: roleFound.role_id,
       user_id: userInfo.user_id,
