@@ -11,7 +11,7 @@ import { FileUploadModule } from './file-upload/file-upload.module';
 import { MailingServiceModule } from './mailing-service/mailing-service.module';
 import { MailerModule as NodeMailerModule } from '@nestjs-modules/mailer';
 import { ContentModule } from './content/content.module';
-import * as Joi from '@hapi/joi';
+import { StripeModule } from 'nestjs-stripe';
 @Module({
   imports: [
     UsersModule,
@@ -21,14 +21,12 @@ import * as Joi from '@hapi/joi';
       secret: `${process.env.SECRET}`,
       signOptions: { expiresIn: '1h' },
     }),
-    ConfigModule.forRoot({
-      validationSchema: Joi.object({
-        STRIPE_SECRET_KEY: Joi.string(),
-        STRIPE_CURRENCY: Joi.string(),
-        FRONTEND_URL: Joi.string(),
-        // ...
-      }),
+    StripeModule.forRoot({
+      apiKey:
+        'sk_test_51KOluiEvT7coUybkht9BPxb1DrKzSz4jpA775OxwCm6wzvLe1IvMgKHBsUZVs741ny1s3Xazb78d8DBUjTGx5L0o00mp7wIJgv',
+      apiVersion: '2020-08-27',
     }),
+    ConfigModule.forRoot(),
     FileUploadModule,
     NodeMailerModule.forRoot({
       transport: {
@@ -40,7 +38,7 @@ import * as Joi from '@hapi/joi';
         },
       },
       defaults: {
-        from: 'volumide42@gmail.com', // process.env.SMTP_DEFAULT_SENDER,
+        from: process.env.SMTP_DEFAULT_SENDER || 'info@bullyvaxx.com',
       },
     }),
     MailingServiceModule,

@@ -1,4 +1,7 @@
 import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
+import { InjectStripe } from 'nestjs-stripe';
+import Stripe from 'stripe';
+
 import { v4 as uuidGenerator } from 'uuid';
 import {
   UserRoleDto,
@@ -32,11 +35,13 @@ export interface UserInfo {
   entity_name?: string;
   quantity?: string;
   user?: any;
+  stripe_id?: any;
 }
 
 @Injectable()
 export class UsersService {
   constructor(
+    @InjectStripe() private readonly stripeClient: Stripe,
     @Inject(USERS_REPOSITORY) private usersRepository: typeof User,
     @Inject(ROLES_REPOSITORY) private rolesRepository: typeof Role,
     @Inject(USER_ROLES_REPOSITORY) private userRolesRepository: typeof UserRole,
@@ -87,10 +92,15 @@ export class UsersService {
     } else {
       userInfo.password = await bcrypt.hash('dfdtgt567y', 10);
     }
+    const stripeId = await this.stripeClient.customers.create({
+      email: userInfo.email,
+    });
+    userInfo.stripe_id = stripeId;
     const userRole = new UserRole({
       role_id: roleFound.role_id,
       user_id: userInfo.user_id,
     });
+
     const user: User = await this.usersRepository.create<User>(userInfo);
     const otherRoles = await user.$get('roles');
     if (user) {

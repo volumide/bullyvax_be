@@ -19,19 +19,57 @@ import {
   CreateChargeDto,
 } from './user.entity';
 import { UsersService } from './users.service';
-import StripeService from '../stripe/stripe.service';
 import { AuthRole, Roles } from '../auth/roles.decorator';
 import { ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
-
+import { InjectStripe } from 'nestjs-stripe';
+import Stripe from 'stripe';
 @Controller('users')
 export class UsersController {
   constructor(
     private userService: UsersService,
-    private stripeService: StripeService,
+    @InjectStripe() private stripe: Stripe, //private stripeService: StripeService,
   ) {}
-  @Get('test')
-  getTest(): string {
-    return 'working';
+
+  @Post('create/user/payment')
+  async getTest() {
+    try {
+      return await this.stripe.checkout.sessions.create({
+        payment_method_types: ['card'],
+        mode: 'payment',
+        success_url: 'http://localhost:3002/users/fetch',
+        cancel_url: 'http://localhost:3002/users/fetch',
+        line_items: [
+          {
+            price_data: {
+              product_data: {
+                name: 'Bullyvx',
+              },
+              currency: 'NGN',
+              unit_amount: 200000,
+            },
+            quantity: 1,
+          },
+        ],
+      });
+    } catch (error) {
+      return error;
+    }
+  }
+
+  @Post('create/payment')
+  async payment() {
+    try {
+      const payment = await this.stripe.paymentIntents.create({
+        amount: 200000,
+        currency: 'NGN',
+        payment_method_types: ['card'],
+      });
+      console.log(payment);
+      return payment;
+    } catch (error) {
+      console.log(this.payment);
+      return error;
+    }
   }
 
   @UseGuards(JwtAuthGuard)
@@ -49,22 +87,23 @@ export class UsersController {
     return this.userService.getAllUsers(...args);
   }
 
-  @Post('charge-user')
-  @ApiBearerAuth('Authorization')
-  async createCharge(@Body() charge: CreateChargeDto) {
-    await this.stripeService.charge(
-      charge.amount,
-      charge.paymentMethodId,
-      charge.stripeID,
-    );
-  }
+  // @Post('charge-user')
+  // @ApiBearerAuth('Authorization')
+  // async createCharge(@Body() charge: CreateChargeDto) {
+  //   await this.userService.charge(
+  //     charge.amount,
+  //     charge.paymentMethodId,
+  //     charge.stripeID,
+  //   );
+  // }
 
   @Post('create-user')
   async registerUser(@Body() user: UserDto): Promise<any> {
-    const stripeCustomer = await this.stripeService.createCustomer(
-      `${user.first_name} ${user.last_name}`,
-      user.email,
-    );
+    // const stripeCustomer = await this.userService.createCustomer(
+    //   `${user.first_name} ${user.last_name}`,
+    //   user.email,
+    // );
+    // user.stripe_id = stripeCustomer.id;
     return this.userService.registerUser(user);
   }
 

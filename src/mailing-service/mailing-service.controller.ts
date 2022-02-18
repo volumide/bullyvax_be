@@ -4,12 +4,10 @@ import { MailingServiceService } from './mailing-service.service';
 
 @Controller('mailing-service')
 export class MailingServiceController {
-    constructor(
-        private readonly mailerService: MailingServiceService
-    ) {}
+  constructor(private readonly mailerService: MailingServiceService) {}
 
-    @Post('send-mail')
-    sendEMail(@Body() mailDetails: MailBody): Promise<any> {
-        return this.mailerService.sendEMail(mailDetails);
-    }
+  @Post('send-mail')
+  sendEMail(@Body() mailDetails: any): Promise<any> {
+    return this.mailerService.sendEMail(mailDetails);
+  }
 }

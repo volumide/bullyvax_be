@@ -66,6 +66,10 @@ export class User extends Model<User> {
   @Column
   password: string;
 
+  @AllowNull(true)
+  @Column
+  stripe_id: string;
+
   @BelongsToMany(
     () => Role,
     () => UserRole,
@@ -190,6 +194,9 @@ export class CreateChargeDto {
 
   @ApiProperty()
   amount: number;
+
+  @ApiProperty()
+  stripeID: string;
 }
 
 export class UserResponse {
@@ -257,6 +264,9 @@ export class UserDto {
 
   @ApiProperty()
   password: string;
+
+  @ApiProperty()
+  stripe_id: string;
 }
 
 export class UserUpdateDto {
