@@ -66,10 +66,6 @@ export class User extends Model<User> {
   @Column
   password: string;
 
-  @AllowNull(true)
-  @Column
-  stripe_id: string;
-
   @BelongsToMany(
     () => Role,
     () => UserRole,

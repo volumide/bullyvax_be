@@ -154,10 +154,17 @@ export class UsersService {
     let users: User[];
     if (params.length > 0) {
       users = await this.usersRepository.findAll({
+        attributes: {
+          exclude: ['password'],
+        },
         where: { [Op.and]: [...params.map(param => param)] },
       });
     } else {
-      users = await this.usersRepository.findAll();
+      users = await this.usersRepository.findAll({
+        attributes: {
+          exclude: ['password'],
+        },
+      });
     }
 
     return users;
