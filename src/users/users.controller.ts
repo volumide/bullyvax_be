@@ -30,6 +30,11 @@ export class UsersController {
     @InjectStripe() private stripe: Stripe, //private stripeService: StripeService,
   ) {}
 
+  @GET('test')
+  async getTest(): string {
+    return 'working';
+  }
+
   @Post('create/user/payment')
   async getTest() {
     try {
