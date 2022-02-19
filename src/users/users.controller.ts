@@ -30,8 +30,8 @@ export class UsersController {
     @InjectStripe() private stripe: Stripe, //private stripeService: StripeService,
   ) {}
 
-  @GET('test')
-  async getTest(): string {
+  @Get('test')
+  getTt(): string {
     return 'working';
   }
 
