@@ -36,8 +36,8 @@ export class UsersController {
       return await this.stripe.checkout.sessions.create({
         payment_method_types: ['card'],
         mode: 'payment',
-        success_url: 'http://localhost:3000/sponsors',
-        cancel_url: 'http://localhost:3000/sponsors',
+        success_url: process.env.SUCCESS_URL,
+        cancel_url: process.env.CANCEL_URL,
         line_items: [
           {
             price_data: {
