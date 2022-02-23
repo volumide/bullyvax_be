@@ -317,7 +317,7 @@ export class SponsorshipDto {
   user_id: string;
 
   @ApiProperty()
-  quantity: string;
+  quantity?: string;
 
   @ApiProperty()
   expiry: string;

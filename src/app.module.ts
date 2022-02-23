@@ -22,8 +22,7 @@ import { StripeModule } from 'nestjs-stripe';
       signOptions: { expiresIn: '1h' },
     }),
     StripeModule.forRoot({
-      apiKey:
-        'sk_test_51KOluiEvT7coUybkht9BPxb1DrKzSz4jpA775OxwCm6wzvLe1IvMgKHBsUZVs741ny1s3Xazb78d8DBUjTGx5L0o00mp7wIJgv',
+      apiKey: process.env.STRIPE_KEY,
       apiVersion: '2020-08-27',
     }),
     ConfigModule.forRoot(),

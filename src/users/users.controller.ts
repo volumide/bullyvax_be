@@ -30,29 +30,24 @@ export class UsersController {
     @InjectStripe() private stripe: Stripe, //private stripeService: StripeService,
   ) {}
 
-  @Get('test')
-  getTt(): string {
-    return 'working';
-  }
-
   @Post('create/user/payment')
-  async getTest() {
+  async getTest(@Body() price: any) {
     try {
       return await this.stripe.checkout.sessions.create({
         payment_method_types: ['card'],
         mode: 'payment',
-        success_url: 'http://localhost:3002/users/fetch',
-        cancel_url: 'http://localhost:3002/users/fetch',
+        success_url: 'http://localhost:3000/sponsors',
+        cancel_url: 'http://localhost:3000/sponsors',
         line_items: [
           {
             price_data: {
               product_data: {
-                name: 'Bullyvx',
+                name: 'Bullyvax sponsorship',
               },
-              currency: 'NGN',
-              unit_amount: 200000,
+              currency: 'USD',
+              unit_amount: 6900, //(6900 * price.length),
             },
-            quantity: 1,
+            quantity: price['price'].length,
           },
         ],
       });
@@ -92,23 +87,8 @@ export class UsersController {
     return this.userService.getAllUsers(...args);
   }
 
-  // @Post('charge-user')
-  // @ApiBearerAuth('Authorization')
-  // async createCharge(@Body() charge: CreateChargeDto) {
-  //   await this.userService.charge(
-  //     charge.amount,
-  //     charge.paymentMethodId,
-  //     charge.stripeID,
-  //   );
-  // }
-
   @Post('create-user')
   async registerUser(@Body() user: UserDto): Promise<any> {
-    // const stripeCustomer = await this.userService.createCustomer(
-    //   `${user.first_name} ${user.last_name}`,
-    //   user.email,
-    // );
-    // user.stripe_id = stripeCustomer.id;
     return this.userService.registerUser(user);
   }
 

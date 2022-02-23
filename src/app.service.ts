@@ -9,15 +9,20 @@ import {
   SchoolDto,
   Sponsorship,
   SponsorshipDto,
+  UserDto,
 } from './users/user.entity';
-import { UserInfo } from './users/users.service';
+import { UserInfo, UsersService } from './users/users.service';
+// UserDto
 import { v4 as uuidGenerator } from 'uuid';
+import { zip } from 'rxjs';
+import { userInfo } from 'os';
 
 @Injectable()
 export class AppService {
   constructor(
     @Inject(SPONSORSHIPS_REPOSITORY)
     private sponsorshipsRepository: typeof Sponsorship,
+    private usersService: UsersService,
     @Inject(SCHOOLS_REPOSITORY) private schoolsRepository: typeof School,
   ) {}
   getHello(): any {
@@ -67,6 +72,10 @@ export class AppService {
       throw new HttpException('Invalid form', HttpStatus.BAD_REQUEST);
     }
 
+    sponsorship.userInfo.quantity = sponsorship.form.schoolsArray.length;
+    const user = await this.usersService.registerUser(sponsorship.userInfo);
+    console.log(user);
+
     return await Promise.all(
       (sponsorship?.form?.schoolsArray as any[]).map(async school => {
         let school_id = uuidGenerator();
@@ -74,8 +83,8 @@ export class AppService {
 
         const { name, zip_code } = school;
         const schoolBody: SchoolDto = {
-          zip_code: sponsorship?.form[zip_code],
-          school_name: sponsorship?.form[name],
+          zip_code: zip_code,
+          school_name: name,
           school_id,
         };
 
@@ -91,8 +100,8 @@ export class AppService {
 
         const sponsorshipBody: SponsorshipDto = {
           expiry: `${new Date().setDate(new Date().getDate() + 30)}`,
-          quantity: '1',
-          user_id: sponsorship.userInfo?.user?.user_id,
+          quantity: sponsorship.form.schoolsArray.length,
+          user_id: user.user.user_id,
           school_id,
           sponsorship_id,
         };
