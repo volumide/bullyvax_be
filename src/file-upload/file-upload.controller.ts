@@ -5,6 +5,7 @@ import {
   Param,
   Post,
   Query,
+  Res,
   UploadedFiles,
   UseGuards,
   UseInterceptors,
@@ -14,6 +15,11 @@ import { FileUploadService } from './file-upload.service';
 import { FileDto } from './file.entity';
 import { ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/auth.guard';
+import { Observable, of } from 'rxjs';
+import { extname, join } from 'path';
+import { diskStorage } from 'multer';
+import path = require('path');
+import { v4 as uuidGenerator } from 'uuid';
 
 export interface FileInfo {
   fieldname: string;
@@ -31,18 +37,28 @@ export interface FileInfo {
 export class FileUploadController {
   constructor(private fileUploadService: FileUploadService) {}
 
-  //   @UseGuards(JwtAuthGuard)
-  //   @ApiBearerAuth('Authorization')
   @Post('upload')
   @UseInterceptors(
     AnyFilesInterceptor({
       limits: {
         fileSize: 15000000,
       },
+      storage: diskStorage({
+        destination: './uploads',
+        filename: (req, file, cb) => {
+          const filename: string =
+            path.parse(file.originalname).name.replace(/\s/g, '') +
+            uuidGenerator();
+          const extension: string = path.parse(file.originalname).ext;
+
+          cb(null, `${filename}${extension}`);
+        },
+      }),
     }),
   )
-  uploadFile(@UploadedFiles() files: FileInfo[]): Promise<FileDto[]> {
-    return this.fileUploadService.uploadFile(files);
+  uploadFile(@UploadedFiles() file: FileInfo[], @Query('id') userId) {
+    // console.log(userId);
+    return this.fileUploadService.uploadFile(file, userId);
   }
 
   @Get('fetch')
@@ -62,6 +78,11 @@ export class FileUploadController {
     );
 
     return this.fileUploadService.fetchFiles(...args);
+  }
+
+  @Get('image/:img')
+  getImage(@Param('img') img, @Res() res): Observable<Object> {
+    return of(res.sendFile(join(process.cwd(), 'uploads/' + img)));
   }
 
   @UseGuards(JwtAuthGuard)

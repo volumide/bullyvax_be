@@ -9,16 +9,20 @@ import { Op } from 'sequelize';
 @Injectable()
 export class FileUploadService {
   constructor(
-    @Inject(FILE_UPLOAD_REPOSITORY) private filesRepository: typeof File
+    @Inject(FILE_UPLOAD_REPOSITORY) private filesRepository: typeof File,
   ) {}
-  async uploadFile(files: FileInfo[]): Promise<FileDto[]> {
+  async uploadFile(files: FileInfo[], userId: string): Promise<FileDto[]> {
     const createdFiles = [];
     if (!files) {
-      throw new HttpException('Upload at least one file!', HttpStatus.BAD_REQUEST);
+      throw new HttpException(
+        'Upload at least one file!',
+        HttpStatus.BAD_REQUEST,
+      );
     }
 
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
+      file.user_id = userId;
       try {
         const createdFile = await this.filesRepository.create(file);
         console.log('createdFile', createdFile);
@@ -48,7 +52,7 @@ export class FileUploadService {
     }
 
     return {
-      message: 'Deleted successfully!'
+      message: 'Deleted successfully!',
     };
   }
 
