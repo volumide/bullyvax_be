@@ -4,7 +4,7 @@ import { LoginDetails } from './app.entity';
 import { AppService } from './app.service';
 import { JwtAuthGuard } from './auth/auth.guard';
 import { AuthService } from './auth/auth.service';
-import { SponsorshipDto } from './users/user.entity';
+import { SchoolDto, SponsorshipDto } from './users/user.entity';
 import { UserInfo } from './users/users.service';
 
 @Controller()
@@ -29,8 +29,8 @@ export class AppController {
     };
   }
 
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth('Authorization')
+  // @UseGuards(JwtAuthGuard)
+  // @ApiBearerAuth('Authorization')
   @Get('sponsorships')
   @ApiQuery({ name: 'zip_name', required: false })
   getSponsorships(
@@ -44,5 +44,10 @@ export class AppController {
     @Body() sponsorship: { userInfo: UserInfo; form: any },
   ): Promise<SponsorshipDto[]> {
     return this.appService.createSponsorship(sponsorship);
+  }
+
+  @Get('all/schools')
+  getAllSchools(): Promise<SchoolDto[]> {
+    return this.appService.getSchool();
   }
 }

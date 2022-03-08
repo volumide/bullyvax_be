@@ -113,4 +113,10 @@ export class AppService {
       }),
     );
   }
+
+  async getSchool(): Promise<School[]> {
+    const allSchool: School[] = await this.schoolsRepository.findAll();
+
+    return allSchool;
+  }
 }
