@@ -98,8 +98,12 @@ export class AppService {
           school_id = school.school_id;
         }
 
+        const day = new Date(),
+          nextDay = new Date();
+        nextDay.setDate(day.getDate() + 30);
+        // const expieryDate = new Date().setDate(new Date().getDate() + 30);
         const sponsorshipBody: SponsorshipDto = {
-          expiry: `${new Date().setDate(new Date().getDate() + 30)}`,
+          expiry: nextDay.toDateString(),
           quantity: sponsorship.form.schoolsArray.length,
           user_id: user.user.user_id,
           school_id,
