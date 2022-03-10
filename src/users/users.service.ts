@@ -35,6 +35,7 @@ export interface UserInfo {
   entity_name?: string;
   quantity?: string;
   user?: any;
+  description?: string;
 }
 
 @Injectable()

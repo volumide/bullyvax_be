@@ -45,6 +45,10 @@ export class User extends Model<User> {
   @Column
   phone: string;
 
+  @AllowNull(true)
+  @Column
+  description: string;
+
   @AllowNull(false)
   @IsEmail
   @Column
@@ -245,6 +249,9 @@ export class UserDto {
 
   @ApiProperty()
   email: string;
+
+  @ApiProperty()
+  description: string;
 
   @ApiProperty()
   gender: string;
