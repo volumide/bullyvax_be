@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Post, Query, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
 import { LoginDetails } from './app.entity';
 import { AppService } from './app.service';
@@ -34,9 +42,10 @@ export class AppController {
   @Get('sponsorships')
   @ApiQuery({ name: 'zip_name', required: false })
   getSponsorships(
+    // @Param('id') id: boolean,
     @Query('zip_name') zip_name?: string,
   ): Promise<SponsorshipDto[]> {
-    return this.appService.getSponsorships(zip_name);
+    return this.appService.getSponsorships(zip_name, 'true');
   }
 
   @Post('sponsorships')
@@ -44,6 +53,14 @@ export class AppController {
     @Body() sponsorship: { userInfo: UserInfo; form: any },
   ): Promise<SponsorshipDto[]> {
     return this.appService.createSponsorship(sponsorship);
+  }
+
+  @Post('sponsorships/get/:id')
+  sponsorship(
+    @Body() sponsorship: { form: any },
+    @Param('id') id: string,
+  ): Promise<SponsorshipDto[]> {
+    return this.appService.getData(sponsorship, id);
   }
 
   @Get('all/schools')

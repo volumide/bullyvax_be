@@ -52,6 +52,7 @@ export class UsersService {
       throw new HttpException('Invalid user details', HttpStatus.BAD_REQUEST);
     }
 
+    // return userInfo;
     let userExists: User = null;
     userExists = await this.getSingleUser(
       ['username', 'email'],
@@ -59,6 +60,7 @@ export class UsersService {
       userInfo,
     );
 
+    // return userExists;
     if (userExists && !userInfo.quantity) {
       throw new HttpException(
         'User with the same detail(s) already exists.',
@@ -181,7 +183,7 @@ export class UsersService {
       operator = {
         [Op.or]: [
           ...findBy.map(prop => {
-            return { [prop]: userDetails[prop] };
+            if (userDetails[prop] !== '') return { [prop]: userDetails[prop] };
           }),
         ],
       };

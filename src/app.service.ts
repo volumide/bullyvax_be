@@ -31,7 +31,10 @@ export class AppService {
     };
   }
 
-  async getSponsorships(zip_name?: string): Promise<Sponsorship[]> {
+  async getSponsorships(
+    zip_name?: string,
+    filter: string = '',
+  ): Promise<Sponsorship[]> {
     let allSponsorships: Sponsorship[] = await this.sponsorshipsRepository.findAll<
       Sponsorship
     >();
@@ -42,11 +45,14 @@ export class AppService {
         >({ where: { sponsorship_id: sponsorship?.sponsorship_id } });
         let user = await sponsorshipSchema.$get('user');
         let school = await sponsorshipSchema.$get('school');
+
         sponsorship['dataValues']['sponsor_name'] =
           `${user?.dataValues?.first_name} ${user?.dataValues?.last_name}` ||
           user?.dataValues?.entity_name;
         sponsorship['dataValues']['school_name'] =
           school?.dataValues?.school_name;
+        sponsorship['dataValues']['description'] =
+          user?.dataValues?.description;
 
         if (
           zip_name &&
@@ -60,13 +66,56 @@ export class AppService {
       }),
     );
 
+    if (filter) {
+      return [...new Set(foundSponsorships)];
+    }
+
+    // const jf = foundSponsorships.filter(sponsorship => sponsorship);
     return foundSponsorships.filter(sponsorship => sponsorship);
   }
 
-  async createSponsorship(sponsorship: {
-    userInfo: UserInfo;
-    form: any;
-  }): Promise<SponsorshipDto[]> {
+  async getData(sponsorship: { form: any }, description: string): Promise<any> {
+    const res = await Promise.all(
+      (sponsorship.form?.schoolsArray as any[]).map(async school => {
+        const { name, zip_code } = school;
+        const schoolExists: School = await this.schoolsRepository.findOne({
+          where: { zip_code, school_name: name },
+        });
+
+        let businessType = [];
+
+        if (schoolExists) {
+          const getSponsors: any = await this.getSponsorships(
+            schoolExists.school_name,
+          );
+          // return getSponsors.length;
+          if (getSponsors) {
+            getSponsors.forEach(sponsor => {
+              if (sponsor['dataValues'].description === description)
+                businessType.push(
+                  sponsor['dataValues'].school_name +
+                    ' is already sponsored by a business in ' +
+                    sponsor['dataValues'].description,
+                );
+            });
+          }
+          // console.log(new Set([businessType]));
+        }
+        return businessType;
+      }),
+    );
+
+    return res;
+  }
+
+  async createSponsorship(
+    sponsorship: {
+      userInfo: UserInfo;
+      form: any;
+      values?: any[];
+    },
+    getDescription: string = '',
+  ): Promise<any> {
     console.log('userInfo', sponsorship.userInfo);
     if (!sponsorship?.form) {
       throw new HttpException('Invalid form', HttpStatus.BAD_REQUEST);
@@ -76,7 +125,9 @@ export class AppService {
     const user = await this.usersService.registerUser(sponsorship.userInfo);
     console.log(user);
 
-    return await Promise.all(
+    let found: boolean = false;
+    let lastDate = '';
+    const res = await Promise.all(
       (sponsorship?.form?.schoolsArray as any[]).map(async school => {
         let school_id = uuidGenerator();
         const sponsorship_id = uuidGenerator();
@@ -91,6 +142,18 @@ export class AppService {
         const schoolExists: School = await this.schoolsRepository.findOne({
           where: { zip_code, school_name: name },
         });
+
+        // if (schoolExists) {
+        //   const getSponsors: any = await this.getSponsorships(
+        //     schoolExists.school_name,
+        //   );
+        //   const last = getSponsors.length - 1;
+
+        //   school_id = getSponsors[0]['dataValues'].school_id;
+        //   lastDate = getSponsors[last]['dataValues'].expiry;
+        // }
+
+        // return;
         if (!schoolExists) {
           const school: School = await this.schoolsRepository.create<School>(
             schoolBody,
@@ -98,29 +161,52 @@ export class AppService {
           school_id = school.school_id;
         }
 
-        const day = new Date(),
-          nextDay = new Date();
+        const day = lastDate ? new Date(lastDate) : new Date();
+        const nextDay = new Date();
         nextDay.setDate(day.getDate() + 30);
         // const expieryDate = new Date().setDate(new Date().getDate() + 30);
         const sponsorshipBody: SponsorshipDto = {
           expiry: nextDay.toDateString(),
-          quantity: sponsorship.form.schoolsArray.length,
+          quantity: '1',
           user_id: user.user.user_id,
           school_id,
           sponsorship_id,
         };
+
+        // if (!sponsored) {
         const createdSponsorship = await this.sponsorshipsRepository.create<
           Sponsorship
         >(sponsorshipBody);
 
         return createdSponsorship;
+        // }
+
+        // return sponsored;
       }),
     );
+
+    if (found) {
+      let v = [];
+      console.log(res, res.length);
+      res.forEach(r => {
+        const ob = r[0].dataValues.school_name;
+        // const a[ob] = []
+        r.forEach((e, i) => {
+          const school = v.push(e.dataValues);
+        });
+      });
+      return {
+        result: v,
+        message: 'School have reached maximum mount of sponsores',
+      };
+    }
+
+    return res;
   }
 
   async getSchool(): Promise<School[]> {
     const allSchool: School[] = await this.schoolsRepository.findAll();
 
-    return allSchool;
+    return;
   }
 }
