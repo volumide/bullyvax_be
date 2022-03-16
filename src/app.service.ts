@@ -48,21 +48,21 @@ export class AppService {
         let user = await sponsorshipSchema.$get('user');
         let school = await sponsorshipSchema.$get('school');
 
+        sponsorship['dataValues']['sponsor_name'] =
+          `${user?.dataValues?.first_name} ${user?.dataValues?.last_name}` ||
+          user?.dataValues?.entity_name;
+        sponsorship['dataValues']['school_name'] =
+          school?.dataValues?.school_name;
+        sponsorship['dataValues']['description'] =
+          user?.dataValues?.description;
         if (
-          (zip_name &&
-            zip_name?.toLowerCase() ===
-              school?.dataValues?.school_name?.toLowerCase()) ||
-          zip_name?.toLowerCase() ===
+          zip_name &&
+          !zip_name?.toLowerCase() ===
+            school?.dataValues?.school_name?.toLowerCase() &&
+          !zip_name?.toLowerCase() ===
             school?.dataValues?.zip_code?.toLowerCase()
         ) {
-          // return;
-          sponsorship['dataValues']['sponsor_name'] =
-            `${user?.dataValues?.first_name} ${user?.dataValues?.last_name}` ||
-            user?.dataValues?.entity_name;
-          sponsorship['dataValues']['school_name'] =
-            school?.dataValues?.school_name;
-          sponsorship['dataValues']['description'] =
-            user?.dataValues?.description;
+          return;
         }
         return sponsorship;
       }),
