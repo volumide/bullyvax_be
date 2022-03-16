@@ -32,7 +32,10 @@ export class AppService {
     };
   }
 
-  async getSponsorships(zip_name?: string): Promise<Sponsorship[]> {
+  async getSponsorships(
+    zip_name?: string,
+    filter = '',
+  ): Promise<Sponsorship[]> {
     let allSponsorships: Sponsorship[] = await this.sponsorshipsRepository.findAll<
       Sponsorship
     >();
@@ -47,9 +50,10 @@ export class AppService {
 
         if (
           (zip_name &&
-            zip_name.toLowerCase() ===
-              school?.dataValues?.school_name.toLowerCase()) ||
-          zip_name.toLowerCase() === school?.dataValues?.zip_code.toLowerCase()
+            zip_name?.toLowerCase() ===
+              school?.dataValues?.school_name?.toLowerCase()) ||
+          zip_name?.toLowerCase() ===
+            school?.dataValues?.zip_code?.toLowerCase()
         ) {
           // return;
           sponsorship['dataValues']['sponsor_name'] =
@@ -66,10 +70,14 @@ export class AppService {
 
     let sentResponse: Sponsorship[] = [];
 
-    foundSponsorships.forEach(e => {
-      if (e['dataValues'].school_name) sentResponse.push(e);
-    });
-    return sentResponse;
+    if (filter) {
+      foundSponsorships.forEach(e => {
+        if (e['dataValues'].school_name) sentResponse.push(e);
+      });
+      return sentResponse;
+    }
+
+    return foundSponsorships;
   }
 
   async getData(sponsorship: { form: any }, description: string): Promise<any> {
