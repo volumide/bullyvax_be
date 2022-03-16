@@ -45,6 +45,7 @@ export class AppController {
     // @Param('id') id: boolean,
     @Query('zip_name') zip_name?: string,
   ): Promise<SponsorshipDto[]> {
+    if (zip_name) return this.appService.getSponsorships(zip_name, 'true');
     return this.appService.getSponsorships(zip_name);
   }
 
