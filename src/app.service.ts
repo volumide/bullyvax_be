@@ -16,6 +16,7 @@ import { UserInfo, UsersService } from './users/users.service';
 import { v4 as uuidGenerator } from 'uuid';
 import { zip } from 'rxjs';
 import { userInfo } from 'os';
+import { Op } from 'sequelize';
 
 @Injectable()
 export class AppService {
@@ -31,10 +32,7 @@ export class AppService {
     };
   }
 
-  async getSponsorships(
-    zip_name?: string,
-    filter: string = '',
-  ): Promise<Sponsorship[]> {
+  async getSponsorships(zip_name?: string): Promise<Sponsorship[]> {
     let allSponsorships: Sponsorship[] = await this.sponsorshipsRepository.findAll<
       Sponsorship
     >();
@@ -43,35 +41,35 @@ export class AppService {
         let sponsorshipSchema: Sponsorship = await this.sponsorshipsRepository.findOne<
           Sponsorship
         >({ where: { sponsorship_id: sponsorship?.sponsorship_id } });
+
         let user = await sponsorshipSchema.$get('user');
         let school = await sponsorshipSchema.$get('school');
 
-        sponsorship['dataValues']['sponsor_name'] =
-          `${user?.dataValues?.first_name} ${user?.dataValues?.last_name}` ||
-          user?.dataValues?.entity_name;
-        sponsorship['dataValues']['school_name'] =
-          school?.dataValues?.school_name;
-        sponsorship['dataValues']['description'] =
-          user?.dataValues?.description;
-
         if (
-          zip_name &&
-          !zip_name.includes(school?.dataValues?.school_name) &&
-          !zip_name.includes(school?.dataValues?.zip_code)
+          (zip_name &&
+            zip_name.toLowerCase() ===
+              school?.dataValues?.school_name.toLowerCase()) ||
+          zip_name.toLowerCase() === school?.dataValues?.zip_code.toLowerCase()
         ) {
-          return null;
+          // return;
+          sponsorship['dataValues']['sponsor_name'] =
+            `${user?.dataValues?.first_name} ${user?.dataValues?.last_name}` ||
+            user?.dataValues?.entity_name;
+          sponsorship['dataValues']['school_name'] =
+            school?.dataValues?.school_name;
+          sponsorship['dataValues']['description'] =
+            user?.dataValues?.description;
         }
-
         return sponsorship;
       }),
     );
 
-    if (filter) {
-      return [...new Set(foundSponsorships)];
-    }
+    let sentResponse: Sponsorship[] = [];
 
-    // const jf = foundSponsorships.filter(sponsorship => sponsorship);
-    return foundSponsorships.filter(sponsorship => sponsorship);
+    foundSponsorships.forEach(e => {
+      if (e['dataValues'].school_name) sentResponse.push(e);
+    });
+    return sentResponse;
   }
 
   async getData(sponsorship: { form: any }, description: string): Promise<any> {
@@ -79,7 +77,12 @@ export class AppService {
       (sponsorship.form?.schoolsArray as any[]).map(async school => {
         const { name, zip_code } = school;
         const schoolExists: School = await this.schoolsRepository.findOne({
-          where: { zip_code, school_name: name },
+          where: {
+            zip_code,
+            school_name: {
+              [Op.like]: `%${name}%`,
+            },
+          },
         });
 
         let businessType = [];
