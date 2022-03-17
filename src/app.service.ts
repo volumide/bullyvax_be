@@ -156,15 +156,15 @@ export class AppService {
           where: { zip_code, school_name: name },
         });
 
-        // if (schoolExists) {
-        //   const getSponsors: any = await this.getSponsorships(
-        //     schoolExists.school_name,
-        //   );
-        //   const last = getSponsors.length - 1;
+        if (schoolExists) {
+          const getSponsors: any = await this.getSponsorships(
+            schoolExists.school_name,
+          );
+          const last = getSponsors.length - 1;
 
-        //   school_id = getSponsors[0]['dataValues'].school_id;
-        //   lastDate = getSponsors[last]['dataValues'].expiry;
-        // }
+          school_id = getSponsors[0]['dataValues'].school_id;
+          lastDate = getSponsors[last]['dataValues'].expiry;
+        }
 
         // return;
         if (!schoolExists) {
