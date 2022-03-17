@@ -16,7 +16,7 @@ import { UserInfo, UsersService } from './users/users.service';
 import { v4 as uuidGenerator } from 'uuid';
 import { zip } from 'rxjs';
 import { userInfo } from 'os';
-import { Op } from 'sequelize';
+import { col, fn, Op, where } from 'sequelize';
 
 @Injectable()
 export class AppService {
@@ -48,6 +48,7 @@ export class AppService {
         let user = await sponsorshipSchema.$get('user');
         let school = await sponsorshipSchema.$get('school');
 
+        // let sponsorGet = sponsorship
         sponsorship['dataValues']['sponsor_name'] =
           `${user?.dataValues?.first_name} ${user?.dataValues?.last_name}` ||
           user?.dataValues?.entity_name;
@@ -57,10 +58,12 @@ export class AppService {
           user?.dataValues?.description;
         if (
           zip_name &&
-          !zip_name?.toLowerCase() ===
-            school?.dataValues?.school_name?.toLowerCase() &&
-          !zip_name?.toLowerCase() ===
-            school?.dataValues?.zip_code?.toLowerCase()
+          !zip_name
+            .toLowerCase()
+            .includes(school?.dataValues?.school_name?.toLowerCase()) &&
+          !zip_name
+            .toLowerCase()
+            .includes(school?.dataValues?.zip_code?.toLowerCase())
         ) {
           return;
         }
@@ -70,14 +73,10 @@ export class AppService {
 
     let sentResponse: Sponsorship[] = [];
 
-    if (filter) {
-      foundSponsorships.forEach(e => {
-        if (e['dataValues'].school_name) sentResponse.push(e);
-      });
-      return sentResponse;
-    }
-
-    return foundSponsorships;
+    foundSponsorships.forEach(e => {
+      if (e && e['dataValues'].school_name) sentResponse.push(e);
+    });
+    return sentResponse;
   }
 
   async getData(sponsorship: { form: any }, description: string): Promise<any> {
@@ -87,9 +86,9 @@ export class AppService {
         const schoolExists: School = await this.schoolsRepository.findOne({
           where: {
             zip_code,
-            school_name: {
-              [Op.like]: `%${name}%`,
-            },
+            [Op.and]: [
+              where(fn('lower', col('school_name')), fn('lower', name)),
+            ],
           },
         });
 
@@ -99,18 +98,21 @@ export class AppService {
           const getSponsors: any = await this.getSponsorships(
             schoolExists.school_name,
           );
-          // return getSponsors.length;
           if (getSponsors) {
-            getSponsors.forEach(sponsor => {
-              if (sponsor['dataValues'].description === description)
-                businessType.push(
-                  sponsor['dataValues'].school_name +
+            getSponsors.forEach(async sponsor => {
+              console.log(sponsor);
+              if (
+                sponsor['dataValues'].description.toLowerCase() ===
+                description.toLowerCase()
+              )
+                businessType.push({
+                  message:
+                    sponsor['dataValues'].school_name +
                     ' is already sponsored by a business in ' +
                     sponsor['dataValues'].description,
-                );
+                });
             });
           }
-          // console.log(new Set([businessType]));
         }
         return businessType;
       }),
