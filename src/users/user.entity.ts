@@ -13,6 +13,107 @@ import { ApiProperty } from '@nestjs/swagger';
 // import { IsString, IsNotEmpty, IsNumber } from 'class';
 
 @Table
+export class Report extends Model<Report> {
+  @AllowNull(false)
+  @Column
+  full_name: string;
+
+  @Column({ primaryKey: true })
+  id: string;
+
+  @AllowNull(true)
+  @Column
+  phone: string;
+
+  @AllowNull(true)
+  @Column
+  email: string;
+
+  @AllowNull(true)
+  @Column
+  school_name: string;
+
+  @AllowNull(true)
+  @Column
+  admin_email: string;
+
+  @AllowNull(true)
+  @Column
+  bully_finitial: string;
+
+  @AllowNull(true)
+  @Column
+  bully_lname: string;
+
+  @AllowNull(true)
+  @Column
+  bully_fullname: string;
+
+  @AllowNull(false)
+  @IsEmail
+  @Column
+  gender: string;
+
+  @AllowNull(true)
+  @Column
+  bully_grade: string;
+
+  @AllowNull(true)
+  @Column
+  incident_date: string;
+
+  @AllowNull(true)
+  @Column
+  incident_time: string;
+
+  @AllowNull(true)
+  @Column
+  staff_witnessed: string;
+
+  @AllowNull(true)
+  @Column
+  staff_witness: string;
+
+  @AllowNull(true)
+  @Column
+  staff_action: string;
+
+  @AllowNull(true)
+  @Column
+  incident_place: string;
+
+  @AllowNull(true)
+  @Column
+  physically_abused: string;
+
+  @AllowNull(true)
+  @Column
+  victim_handicapped: string;
+
+  @AllowNull(true)
+  @Column
+  victim_younger: string;
+
+  @AllowNull(true)
+  @Column
+  details: string;
+
+  @AllowNull(true)
+  @Column
+  serial_bully: string;
+
+  @AllowNull(true)
+  @Column
+  other_incidents: string;
+
+  @AllowNull(true)
+  @Column
+  user_id: string;
+
+  @BelongsTo(() => User)
+  reporter: Role[];
+}
+@Table
 export class User extends Model<User> {
   @AllowNull(false)
   @Column

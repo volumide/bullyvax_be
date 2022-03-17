@@ -11,6 +11,7 @@ import {
   UserResponse,
   UserRole,
   UserUpdateDto,
+  Report,
 } from './user.entity';
 import * as bcrypt from 'bcrypt';
 import { Op } from 'sequelize';
@@ -18,6 +19,7 @@ import {
   ROLES_REPOSITORY,
   USERS_REPOSITORY,
   USER_ROLES_REPOSITORY,
+  REPORT_REPOSITORY,
 } from '../constants';
 import { LoginDetails } from '../app.entity';
 
@@ -44,6 +46,7 @@ export class UsersService {
     @InjectStripe() private readonly stripeClient: Stripe,
     @Inject(USERS_REPOSITORY) private usersRepository: typeof User,
     @Inject(ROLES_REPOSITORY) private rolesRepository: typeof Role,
+    @Inject(REPORT_REPOSITORY) private reportRepository: typeof Report,
     @Inject(USER_ROLES_REPOSITORY) private userRolesRepository: typeof UserRole,
   ) {}
 
@@ -280,5 +283,18 @@ export class UsersService {
       );
     }
     return revokedRole;
+  }
+
+  async createReport(report: any): Promise<any> {
+    report['id'] = uuidGenerator();
+    await this.reportRepository.create(report);
+    return {
+      message: 'Report submitted succesfuly',
+    };
+  }
+
+  async getAllReport(): Promise<any> {
+    const allReport = await this.reportRepository.findAll();
+    return allReport;
   }
 }

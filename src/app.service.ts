@@ -67,6 +67,7 @@ export class AppService {
         ) {
           return;
         }
+
         return sponsorship;
       }),
     );
@@ -76,7 +77,11 @@ export class AppService {
     foundSponsorships.forEach(e => {
       if (e && e['dataValues'].school_name) sentResponse.push(e);
     });
-    return sentResponse;
+    console.log(sentResponse);
+
+    return sentResponse.sort(
+      (a, b) => b['dataValues'].createdAt - a['dataValues'].createdAt,
+    );
   }
 
   async getData(sponsorship: { form: any }, description: string): Promise<any> {
@@ -93,7 +98,9 @@ export class AppService {
         });
 
         let businessType = [];
+        let sponsors = [];
 
+        let join = {};
         if (schoolExists) {
           const getSponsors: any = await this.getSponsorships(
             schoolExists.school_name,
@@ -104,17 +111,24 @@ export class AppService {
               if (
                 sponsor['dataValues'].description.toLowerCase() ===
                 description.toLowerCase()
-              )
-                businessType.push({
-                  message:
-                    sponsor['dataValues'].school_name +
+              ) {
+                businessType.push(
+                  sponsor['dataValues'].school_name +
                     ' is already sponsored by a business in ' +
                     sponsor['dataValues'].description,
-                });
+                );
+              }
+              sponsors.push(sponsor);
             });
           }
+
+          join = {
+            message: businessType[0],
+            sponsors: sponsors,
+          };
         }
-        return businessType;
+
+        return join;
       }),
     );
 
@@ -157,13 +171,13 @@ export class AppService {
         });
 
         if (schoolExists) {
+          // return schoolExists;
           const getSponsors: any = await this.getSponsorships(
             schoolExists.school_name,
           );
-          const last = getSponsors.length - 1;
 
           school_id = getSponsors[0]['dataValues'].school_id;
-          lastDate = getSponsors[last]['dataValues'].expiry;
+          lastDate = getSponsors[0]['dataValues'].expiry;
         }
 
         // return;
@@ -175,7 +189,7 @@ export class AppService {
         }
 
         const day = lastDate ? new Date(lastDate) : new Date();
-        const nextDay = new Date();
+        const nextDay = lastDate ? new Date(lastDate) : new Date();
         nextDay.setDate(day.getDate() + 30);
         // const expieryDate = new Date().setDate(new Date().getDate() + 30);
         const sponsorshipBody: SponsorshipDto = {

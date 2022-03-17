@@ -148,4 +148,11 @@ export class UsersController {
   updateUser(@Body() user: UserUpdateDto): Promise<any> {
     return this.userService.updateUser(user);
   }
+
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('Authorization')
+  @Put('update-user')
+  newReport(@Body() report: any): Promise<any> {
+    return this.userService.createReport(report);
+  }
 }
