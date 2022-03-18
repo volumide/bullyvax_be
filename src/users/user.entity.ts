@@ -8,6 +8,7 @@ import {
   AllowNull,
   HasMany,
   BelongsTo,
+  HasOne,
 } from 'sequelize-typescript';
 import { ApiProperty } from '@nestjs/swagger';
 // import { IsString, IsNotEmpty, IsNumber } from 'class';
@@ -18,14 +19,19 @@ export class Report extends Model<Report> {
   @Column
   full_name: string;
 
+  @ForeignKey(() => User)
+  @Column
+  user_id: string;
+
   @Column({ primaryKey: true })
-  id: string;
+  report_id: string;
 
   @AllowNull(true)
   @Column
   phone: string;
 
   @AllowNull(true)
+  @IsEmail
   @Column
   email: string;
 
@@ -34,6 +40,7 @@ export class Report extends Model<Report> {
   school_name: string;
 
   @AllowNull(true)
+  @IsEmail
   @Column
   admin_email: string;
 
@@ -49,8 +56,7 @@ export class Report extends Model<Report> {
   @Column
   bully_fullname: string;
 
-  @AllowNull(false)
-  @IsEmail
+  @AllowNull(true)
   @Column
   gender: string;
 
@@ -106,12 +112,8 @@ export class Report extends Model<Report> {
   @Column
   other_incidents: string;
 
-  @AllowNull(true)
-  @Column
-  user_id: string;
-
   @BelongsTo(() => User)
-  reporter: Role[];
+  user: User[];
 }
 @Table
 export class User extends Model<User> {
@@ -176,6 +178,9 @@ export class User extends Model<User> {
     () => UserRole,
   )
   roles: Role[];
+
+  @HasMany(() => Report)
+  report: Report[];
 }
 
 @Table
@@ -329,6 +334,77 @@ export class UserResponse {
   gender: string;
 }
 
+export class ReportDto {
+  @ApiProperty()
+  full_name: string;
+  @ApiProperty()
+  user_id: string;
+
+  @ApiProperty() report_id: string;
+
+  @ApiProperty()
+  phone: string;
+
+  @ApiProperty()
+  email: string;
+
+  @ApiProperty()
+  school_name: string;
+
+  @ApiProperty()
+  admin_email: string;
+
+  @ApiProperty()
+  bully_finitial: string;
+
+  @ApiProperty()
+  bully_lname: string;
+
+  @ApiProperty()
+  bully_fullname: string;
+
+  @ApiProperty()
+  gender: string;
+
+  @ApiProperty()
+  bully_grade: string;
+
+  @ApiProperty()
+  incident_date: string;
+
+  @ApiProperty()
+  incident_time: string;
+
+  @ApiProperty()
+  staff_witnessed: string;
+
+  @ApiProperty()
+  staff_witness: string;
+
+  @ApiProperty()
+  staff_action: string;
+
+  @ApiProperty()
+  incident_place: string;
+
+  @ApiProperty()
+  physically_abused: string;
+
+  @ApiProperty()
+  victim_handicapped: string;
+
+  @ApiProperty()
+  victim_younger: string;
+
+  @ApiProperty()
+  details: string;
+
+  @ApiProperty()
+  serial_bully: string;
+
+  @ApiProperty()
+  other_incidents: string;
+}
 export class UserDto {
   @ApiProperty()
   username: string;

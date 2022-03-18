@@ -286,7 +286,7 @@ export class UsersService {
   }
 
   async createReport(report: any): Promise<any> {
-    report['id'] = uuidGenerator();
+    report['report_id'] = uuidGenerator();
     await this.reportRepository.create(report);
     return {
       message: 'Report submitted succesfuly',

@@ -17,6 +17,7 @@ import {
   UserResponse,
   UserUpdateDto,
   CreateChargeDto,
+  ReportDto,
 } from './user.entity';
 import { UsersService } from './users.service';
 import { AuthRole, Roles } from '../auth/roles.decorator';
@@ -144,15 +145,22 @@ export class UsersController {
 
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('Authorization')
-  @Put('update-user')
-  updateUser(@Body() user: UserUpdateDto): Promise<any> {
-    return this.userService.updateUser(user);
+  @Post('report')
+  report(@Body() report: ReportDto): Promise<any> {
+    return this.userService.createReport(report);
   }
 
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('Authorization')
-  @Put('update-user')
-  newReport(@Body() report: any): Promise<any> {
-    return this.userService.createReport(report);
+  @Get('report')
+  getReport(): Promise<ReportDto[]> {
+    return this.userService.getAllReport();
   }
+
+  // @UseGuards(JwtAuthGuard)
+  // @ApiBearerAuth('Authorization')
+  // @Put('update-user')
+  // updateUser(@Body() user: UserUpdateDto): Promise<any> {
+  //   return this.userService.updateUser(user);
+  // }
 }
