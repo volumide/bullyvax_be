@@ -44,9 +44,11 @@ export class AppController {
   getSponsorships(
     // @Param('id') id: boolean,
     @Query('zip_name') zip_name?: string,
+    @Query('zip_code') zip_code?: string,
   ): Promise<SponsorshipDto[]> {
-    if (zip_name) return this.appService.getSponsorships(zip_name, 'true');
-    return this.appService.getSponsorships(zip_name);
+    if (zip_name)
+      return this.appService.getSponsorships(zip_name, zip_code, 'true');
+    return this.appService.getSponsorships(zip_name, zip_code);
   }
 
   @Post('sponsorships')

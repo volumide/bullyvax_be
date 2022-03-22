@@ -34,6 +34,7 @@ export class AppService {
 
   async getSponsorships(
     zip_name?: string,
+    zip_code?: string,
     filter = '',
   ): Promise<Sponsorship[]> {
     let allSponsorships: Sponsorship[] = await this.sponsorshipsRepository.findAll<
@@ -58,14 +59,14 @@ export class AppService {
         sponsorship['dataValues']['description'] =
           user?.dataValues?.description;
         if (
-          zip_name &&
-          !zip_name
+          (zip_name &&
+            zip_code &&
+            !zip_name
+              .toLowerCase()
+              .includes(school?.dataValues?.school_name?.toLowerCase())) ||
+          !zip_code
             .toLowerCase()
-            .includes(school?.dataValues?.school_name?.toLowerCase())
-          // &&
-          // // zip_name
-          //   .toLowerCase()
-          //   .includes(school?.dataValues?.zip_code?.toLowerCase())
+            .includes(school?.dataValues?.zip_code?.toLowerCase())
         ) {
           return;
         }
