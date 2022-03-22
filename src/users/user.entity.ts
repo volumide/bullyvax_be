@@ -358,6 +358,9 @@ export class ReportDto {
   bully_finitial: string;
 
   @ApiProperty()
+  bully_teacher: string;
+
+  @ApiProperty()
   bully_lname: string;
 
   @ApiProperty()
