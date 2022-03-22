@@ -54,16 +54,18 @@ export class AppService {
           user?.dataValues?.entity_name;
         sponsorship['dataValues']['school_name'] =
           school?.dataValues?.school_name;
+        sponsorship['dataValues']['zip_code'] = school?.dataValues?.zip_code;
         sponsorship['dataValues']['description'] =
           user?.dataValues?.description;
         if (
           zip_name &&
           !zip_name
             .toLowerCase()
-            .includes(school?.dataValues?.school_name?.toLowerCase()) &&
-          !zip_name
-            .toLowerCase()
-            .includes(school?.dataValues?.zip_code?.toLowerCase())
+            .includes(school?.dataValues?.school_name?.toLowerCase())
+          // &&
+          // // zip_name
+          //   .toLowerCase()
+          //   .includes(school?.dataValues?.zip_code?.toLowerCase())
         ) {
           return;
         }
