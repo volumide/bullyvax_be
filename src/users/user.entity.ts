@@ -31,6 +31,14 @@ export class Report extends Model<Report> {
   phone: string;
 
   @AllowNull(true)
+  @Column
+  bully_teacher: string;
+
+  @AllowNull(true)
+  @Column
+  zip_code: string;
+
+  @AllowNull(true)
   @IsEmail
   @Column
   email: string;
@@ -359,6 +367,9 @@ export class ReportDto {
 
   @ApiProperty()
   bully_teacher: string;
+
+  @ApiProperty()
+  zip_code: string;
 
   @ApiProperty()
   bully_lname: string;
