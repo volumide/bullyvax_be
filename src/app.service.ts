@@ -58,20 +58,25 @@ export class AppService {
         sponsorship['dataValues']['zip_code'] = school?.dataValues?.zip_code;
         sponsorship['dataValues']['description'] =
           user?.dataValues?.description;
+
         if (
           (zip_name &&
-            zip_code &&
-            !zip_name
-              .toLowerCase()
-              .includes(school?.dataValues?.school_name?.toLowerCase())) ||
-          !zip_code
-            .toLowerCase()
-            .includes(school?.dataValues?.zip_code?.toLowerCase())
+            zip_name.toLowerCase() !==
+              school?.dataValues?.school_name?.toLowerCase()) ||
+          (zip_code &&
+            zip_code.toString().toLowerCase() !==
+              school?.dataValues?.zip_code?.toLowerCase())
         ) {
           return;
+        } else {
+          console.log(
+            zip_name,
+            zip_code,
+            school?.dataValues?.school_name,
+            school?.dataValues?.zip_code,
+          );
+          return sponsorship;
         }
-
-        return sponsorship;
       }),
     );
 
@@ -80,8 +85,6 @@ export class AppService {
     foundSponsorships.forEach(e => {
       if (e && e['dataValues'].school_name) sentResponse.push(e);
     });
-    console.log(sentResponse);
-
     return sentResponse.sort(
       (a, b) => b['dataValues'].createdAt - a['dataValues'].createdAt,
     );
