@@ -36,6 +36,10 @@ export class Report extends Model<Report> {
 
   @AllowNull(true)
   @Column
+  report_type: string;
+
+  @AllowNull(true)
+  @Column
   zip_code: string;
 
   @AllowNull(true)
@@ -361,6 +365,9 @@ export class ReportDto {
 
   @ApiProperty()
   admin_email: string;
+
+  @ApiProperty()
+  report_type: string;
 
   @ApiProperty()
   bully_finitial: string;
