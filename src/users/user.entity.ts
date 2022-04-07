@@ -355,6 +355,9 @@ export class ReportDto {
   @ApiProperty() report_id: string;
 
   @ApiProperty()
+  report_type: string;
+
+  @ApiProperty()
   phone: string;
 
   @ApiProperty()
@@ -365,9 +368,6 @@ export class ReportDto {
 
   @ApiProperty()
   admin_email: string;
-
-  @ApiProperty()
-  report_type: string;
 
   @ApiProperty()
   bully_finitial: string;
