@@ -77,7 +77,7 @@ export class UsersController {
           currency: 'usd',
           customer: customer.id,
           receipt_email: token.email,
-          description: `Purchased the power`
+          description: `Bullyvax sponsorship`
           // shipping: {
           //   name: token.card.name,
           //   address: {
