@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 import {
   Body,
   Controller,
@@ -24,6 +25,8 @@ import { AuthRole, Roles } from '../auth/roles.decorator';
 import { ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
 import { InjectStripe } from 'nestjs-stripe';
 import Stripe from 'stripe';
+import { v4 as uuidGenerator } from 'uuid';
+
 @Controller('users')
 export class UsersController {
   constructor(
@@ -34,7 +37,7 @@ export class UsersController {
   @Post('create/user/payment')
   async getTest(@Body() price: any) {
     try {
-      return await this.stripe.checkout.sessions.create({
+      const v = await this.stripe.checkout.sessions.create({
         payment_method_types: ['card'],
         mode: 'payment',
         success_url: process.env.SUCCESS_URL,
@@ -52,23 +55,46 @@ export class UsersController {
           },
         ],
       });
+      return v;
     } catch (error) {
       return error;
     }
   }
 
-  @Post('create/payment')
-  async payment() {
+  @Post('stripe/payment')
+  async payment(@Body() data: any) {
     try {
-      const payment = await this.stripe.paymentIntents.create({
-        amount: 200000,
-        currency: 'NGN',
-        payment_method_types: ['card'],
+      const { token, quantity } = data;
+
+      const customer = await this.stripe.customers.create({
+        email: token.email,
+        source: token.id,
       });
-      console.log(payment);
-      return payment;
+      const idempotencyKey = uuidGenerator();
+      const charge = await this.stripe.charges.create(
+        {
+          amount: 6900 * quantity,
+          currency: 'usd',
+          customer: customer.id,
+          receipt_email: token.email,
+          description: `Purchased the power`
+          // shipping: {
+          //   name: token.card.name,
+          //   address: {
+          //     line1: token.card.address_line1,
+          //     line2: token.card.address_line2,
+          //     city: token.card.address_city,
+          //     country: token.card.address_country,
+          //     postal_code: token.card.address_zip,
+          //   },
+          // },
+        },
+        {
+          idempotencyKey,
+        },
+      );
+      return charge;
     } catch (error) {
-      console.log(this.payment);
       return error;
     }
   }
