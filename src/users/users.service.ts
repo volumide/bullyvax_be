@@ -12,6 +12,7 @@ import {
   UserRole,
   UserUpdateDto,
   Report,
+  Bully,
 } from './user.entity';
 import * as bcrypt from 'bcrypt';
 import { Op } from 'sequelize';
@@ -20,8 +21,10 @@ import {
   USERS_REPOSITORY,
   USER_ROLES_REPOSITORY,
   REPORT_REPOSITORY,
+  BULLY_REPOSITORY,
 } from '../constants';
 import { LoginDetails } from '../app.entity';
+import { AnyARecord } from 'dns';
 
 export interface UserInfo {
   username: string;
@@ -47,6 +50,7 @@ export class UsersService {
     @Inject(USERS_REPOSITORY) private usersRepository: typeof User,
     @Inject(ROLES_REPOSITORY) private rolesRepository: typeof Role,
     @Inject(REPORT_REPOSITORY) private reportRepository: typeof Report,
+    @Inject(BULLY_REPOSITORY) private bullyRepository: typeof Bully,
     @Inject(USER_ROLES_REPOSITORY) private userRolesRepository: typeof UserRole,
   ) {}
 
@@ -285,9 +289,22 @@ export class UsersService {
     return revokedRole;
   }
 
+  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   async createReport(report: any): Promise<any> {
-    report['report_id'] = uuidGenerator();
+    const id = uuidGenerator();
+    report['report_id'] = id;
     await this.reportRepository.create(report);
+    if (report['bullies']) {
+      const bullies = await Promise.all(
+        (report['bullies'] as any[]).map(async b => {
+          const bullyId = uuidGenerator();
+          b['bully_id'] = bullyId;
+          b['report_id'] = id;
+          await this.bullyRepository.create(b);
+        }),
+      );
+    }
+
     return {
       message: 'Report submitted succesfuly',
     };

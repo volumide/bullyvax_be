@@ -8,11 +8,59 @@ import {
   AllowNull,
   HasMany,
   BelongsTo,
-  HasOne,
+  // HasOne,
 } from 'sequelize-typescript';
 import { ApiProperty } from '@nestjs/swagger';
 // import { IsString, IsNotEmpty, IsNumber } from 'class';
 
+// @Table
+// export class Bully extends Model<Bully> {
+//   @Column({ primaryKey: true })
+//   bully_id: string;
+
+//   @AllowNull(true)
+//   @Column
+//   bully_name: string;
+
+//   @AllowNull(true)
+//   @Column
+//   bully_grade: string;
+
+// 	@AllowNull(true)
+//   @Column
+//   bully_gender: string;
+
+// 	@ForeignKey(() => Report)
+//   @Column
+//   report_id: string;
+
+//   @BelongsTo(() => Report)
+//   report: Report[];
+// }
+@Table
+export class Bully extends Model<Bully> {
+  @Column({ primaryKey: true })
+  bully_id: string;
+
+  @AllowNull(true)
+  @Column
+  bully_name: string;
+
+  @AllowNull(true)
+  @Column
+  bully_grade: string;
+
+	@AllowNull(true)
+  @Column
+  bully_gender: string;
+
+	@ForeignKey(() => Report)
+  @Column
+  report_id: string;
+
+  @BelongsTo(() => Report)
+  report: Report[];
+}
 @Table
 export class Report extends Model<Report> {
   @AllowNull(false)
@@ -126,6 +174,9 @@ export class Report extends Model<Report> {
 
   @BelongsTo(() => User)
   user: User[];
+
+  @HasMany(() => Bully)
+  bully: Bully[];
 }
 @Table
 export class User extends Model<User> {

@@ -6,8 +6,10 @@ import {
   SCHOOLS_REPOSITORY,
   STUDENTS_REPOSITORY,
   REPORT_REPOSITORY,
+	BULLY_REPOSITORY
 } from '../constants';
 import {
+	Bully,
   Report,
   Role,
   School,
@@ -45,5 +47,9 @@ export const usersProviders = [
   {
     provide: REPORT_REPOSITORY,
     useValue: Report,
+  },
+  {
+    provide: BULLY_REPOSITORY,
+    useValue: Bully,
   },
 ];

@@ -34,33 +34,6 @@ export class UsersController {
     @InjectStripe() private stripe: Stripe, //private stripeService: StripeService,
   ) {}
 
-  @Post('create/user/payment')
-  async getTest(@Body() price: any) {
-    try {
-      const v = await this.stripe.checkout.sessions.create({
-        payment_method_types: ['card'],
-        mode: 'payment',
-        success_url: process.env.SUCCESS_URL,
-        cancel_url: process.env.CANCEL_URL,
-        line_items: [
-          {
-            price_data: {
-              product_data: {
-                name: 'Bullyvax sponsorship',
-              },
-              currency: 'USD',
-              unit_amount: 6900, //(6900 * price.length),
-            },
-            quantity: price['price'].length,
-          },
-        ],
-      });
-      return v;
-    } catch (error) {
-      return error;
-    }
-  }
-
   @Post('stripe/payment')
   async payment(@Body() data: any) {
     try {
@@ -78,16 +51,6 @@ export class UsersController {
           customer: customer.id,
           receipt_email: token.email,
           description: `Bullyvax sponsorship`
-          // shipping: {
-          //   name: token.card.name,
-          //   address: {
-          //     line1: token.card.address_line1,
-          //     line2: token.card.address_line2,
-          //     city: token.card.address_city,
-          //     country: token.card.address_country,
-          //     postal_code: token.card.address_zip,
-          //   },
-          // },
         },
         {
           idempotencyKey,

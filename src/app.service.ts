@@ -37,17 +37,17 @@ export class AppService {
     zip_code?: string,
     filter = '',
   ): Promise<Sponsorship[]> {
-    let allSponsorships: Sponsorship[] = await this.sponsorshipsRepository.findAll<
+    const allSponsorships: Sponsorship[] = await this.sponsorshipsRepository.findAll<
       Sponsorship
     >();
-    let foundSponsorships = await Promise.all(
+    const foundSponsorships = await Promise.all(
       allSponsorships.map(async sponsorship => {
-        let sponsorshipSchema: Sponsorship = await this.sponsorshipsRepository.findOne<
+        const sponsorshipSchema: Sponsorship = await this.sponsorshipsRepository.findOne<
           Sponsorship
         >({ where: { sponsorship_id: sponsorship?.sponsorship_id } });
 
-        let user = await sponsorshipSchema.$get('user');
-        let school = await sponsorshipSchema.$get('school');
+        const user = await sponsorshipSchema.$get('user');
+        const school = await sponsorshipSchema.$get('school');
 
         // let sponsorGet = sponsorship
         sponsorship['dataValues']['sponsor_name'] =
@@ -80,7 +80,7 @@ export class AppService {
       }),
     );
 
-    let sentResponse: Sponsorship[] = [];
+    const sentResponse: Sponsorship[] = [];
 
     foundSponsorships.forEach(e => {
       if (e && e['dataValues'].school_name) sentResponse.push(e);
@@ -103,8 +103,8 @@ export class AppService {
           },
         });
 
-        let businessType = [];
-        let sponsors = [];
+        const businessType = [];
+        const sponsors = [];
 
         let join = {};
         if (schoolExists) {
@@ -147,7 +147,7 @@ export class AppService {
       form: any;
       values?: any[];
     },
-    getDescription: string = '',
+    getDescription = '',
   ): Promise<any> {
     console.log('userInfo', sponsorship.userInfo);
     if (!sponsorship?.form) {
@@ -158,7 +158,7 @@ export class AppService {
     const user = await this.usersService.registerUser(sponsorship.userInfo);
     console.log(user);
 
-    let found: boolean = false;
+    const found = false;
     let lastDate = '';
     const res = await Promise.all(
       (sponsorship?.form?.schoolsArray as any[]).map(async school => {
@@ -219,7 +219,7 @@ export class AppService {
     );
 
     if (found) {
-      let v = [];
+      const v = [];
       console.log(res, res.length);
       res.forEach(r => {
         const ob = r[0].dataValues.school_name;
