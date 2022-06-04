@@ -37,7 +37,7 @@ export class UsersController {
   @Post('stripe/payment')
   async payment(@Body() data: any) {
     try {
-      const { token, quantity } = data;
+      const { token, quantity, price } = data;
 
       const customer = await this.stripe.customers.create({
         email: token.email,
@@ -46,7 +46,7 @@ export class UsersController {
       const idempotencyKey = uuidGenerator();
       const charge = await this.stripe.charges.create(
         {
-          amount: 6900 * quantity,
+          amount: price * quantity,
           currency: 'usd',
           customer: customer.id,
           receipt_email: token.email,
