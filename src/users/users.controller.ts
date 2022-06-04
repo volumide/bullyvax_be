@@ -50,7 +50,7 @@ export class UsersController {
           currency: 'usd',
           customer: customer.id,
           receipt_email: token.email,
-          description: `Bullyvax sponsorship`
+          description: `Bullyvax sponsorship`,
         },
         {
           idempotencyKey,
@@ -144,6 +144,12 @@ export class UsersController {
   @Get('report')
   getReport(): Promise<ReportDto[]> {
     return this.userService.getAllReport();
+  }
+
+  @Post('report-request')
+  reportRequest(@Body() report: any): Promise<any> {
+    report.id = uuidGenerator();
+    return this.userService.saveRequest(report);
   }
 
   // @UseGuards(JwtAuthGuard)

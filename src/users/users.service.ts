@@ -13,6 +13,7 @@ import {
   UserUpdateDto,
   Report,
   Bully,
+  ReportRequest,
 } from './user.entity';
 import * as bcrypt from 'bcrypt';
 import { Op } from 'sequelize';
@@ -22,6 +23,7 @@ import {
   USER_ROLES_REPOSITORY,
   REPORT_REPOSITORY,
   BULLY_REPOSITORY,
+  REQUEST_REPORT,
 } from '../constants';
 import { LoginDetails } from '../app.entity';
 import { AnyARecord } from 'dns';
@@ -52,6 +54,7 @@ export class UsersService {
     @Inject(REPORT_REPOSITORY) private reportRepository: typeof Report,
     @Inject(BULLY_REPOSITORY) private bullyRepository: typeof Bully,
     @Inject(USER_ROLES_REPOSITORY) private userRolesRepository: typeof UserRole,
+    @Inject(REQUEST_REPORT) private reportRequest: typeof ReportRequest,
   ) {}
 
   async registerUser(userInfo: UserInfo): Promise<any> {
@@ -225,6 +228,20 @@ export class UsersService {
     };
   }
 
+  async saveReportQuery(roleInfo: RoleDto): Promise<any> {
+    const roleExists = await this.rolesRepository.findOne<Role>({
+      where: { role: roleInfo.role },
+    });
+    if (roleExists) {
+      throw new HttpException('Role already exists.', HttpStatus.BAD_REQUEST);
+    }
+    roleInfo['role_id'] = uuidGenerator();
+    await this.rolesRepository.create(roleInfo);
+    return {
+      message: 'Role added successfully',
+    };
+  }
+
   async addUserRole(roleInfo: UserRoleDto): Promise<any> {
     // verify role existance in DB
     const roleFound: Role = await this.rolesRepository.findOne<Role>({
@@ -313,5 +330,16 @@ export class UsersService {
   async getAllReport(): Promise<any> {
     const allReport = await this.reportRepository.findAll();
     return allReport;
+  }
+
+  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+  async saveRequest(request: any): Promise<any> {
+    if (!request?.email) {
+      throw new HttpException('Invalid user details', HttpStatus.BAD_REQUEST);
+    }
+    await this.reportRequest.create(request);
+    return {
+      message: 'request sent successfully',
+    };
   }
 }

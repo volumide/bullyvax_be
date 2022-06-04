@@ -50,11 +50,11 @@ export class Bully extends Model<Bully> {
   @Column
   bully_grade: string;
 
-	@AllowNull(true)
+  @AllowNull(true)
   @Column
   bully_gender: string;
 
-	@ForeignKey(() => Report)
+  @ForeignKey(() => Report)
   @Column
   report_id: string;
 
@@ -323,6 +323,48 @@ export class Student extends Model<Student> {
 
   @BelongsTo(() => School)
   school: School;
+}
+
+@Table
+export class ReportRequest extends Model<ReportRequest> {
+  @AllowNull(true)
+  @Column
+  schoolName: string;
+
+  @AllowNull(true)
+  @Column
+  zipCode: string;
+
+  @AllowNull(true)
+  @Column
+  bullyName: string;
+
+  @AllowNull(true)
+  @Column
+  bullyGrade: string;
+
+  @AllowNull(true)
+  @Column
+  bullyTeacher: string;
+
+  @AllowNull(true)
+  @Column
+  bullyGender: string;
+
+  @AllowNull(true)
+  @Column
+  bullyNumber: string;
+
+  @AllowNull(true)
+  @Column
+  bullyvaxNumber: string;
+
+  @AllowNull(true)
+  @Column
+  email: string;
+
+  @Column({ primaryKey: true })
+  id: string;
 }
 
 @Table

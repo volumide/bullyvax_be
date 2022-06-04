@@ -3,7 +3,7 @@ import { Content } from 'src/content/content.entity';
 import { File } from 'src/file-upload/file.entity';
 import { SEQUELIZE } from '../constants';
 import {
-	Bully,
+  Bully,
   Report,
   Role,
   School,
@@ -12,6 +12,7 @@ import {
   Student,
   User,
   UserRole,
+  ReportRequest,
 } from '../users/user.entity';
 
 export const databaseProviders = [
@@ -37,7 +38,8 @@ export const databaseProviders = [
         Student,
         Sponsor,
         Report,
-				Bully
+        Bully,
+        ReportRequest,
       ]);
       await sequelize.sync();
       return sequelize;

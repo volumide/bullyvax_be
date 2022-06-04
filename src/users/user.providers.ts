@@ -6,10 +6,11 @@ import {
   SCHOOLS_REPOSITORY,
   STUDENTS_REPOSITORY,
   REPORT_REPOSITORY,
-	BULLY_REPOSITORY
+  BULLY_REPOSITORY,
+  REQUEST_REPORT,
 } from '../constants';
 import {
-	Bully,
+  Bully,
   Report,
   Role,
   School,
@@ -17,6 +18,7 @@ import {
   Student,
   User,
   UserRole,
+  ReportRequest,
 } from './user.entity';
 
 export const usersProviders = [
@@ -39,6 +41,10 @@ export const usersProviders = [
   {
     provide: SCHOOLS_REPOSITORY,
     useValue: School,
+  },
+  {
+    provide: REQUEST_REPORT,
+    useValue: ReportRequest,
   },
   {
     provide: STUDENTS_REPOSITORY,
