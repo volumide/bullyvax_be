@@ -62,9 +62,9 @@ export class UsersController {
     }
   }
 
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   @Roles(AuthRole.User)
-  @ApiBearerAuth('Authorization')
+  // @ApiBearerAuth('Authorization')
   @Get('fetch')
   @ApiQuery({ name: 'user_id', required: false })
   getUsers(@Query('user_id') user_id?: string): Promise<UserResponse[]> {

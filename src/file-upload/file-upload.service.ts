@@ -61,6 +61,7 @@ export class FileUploadService {
     if (params.length > 0) {
       files = await this.filesRepository.findAll({
         where: { [Op.and]: [...params.map(param => param)] },
+        include: ['User'],
       });
     } else {
       files = await this.filesRepository.findAll();

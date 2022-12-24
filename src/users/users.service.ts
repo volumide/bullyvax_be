@@ -15,6 +15,7 @@ import {
   Bully,
   ReportRequest,
 } from './user.entity';
+// import * as bcrypt from 'bcrypt';
 import * as bcrypt from 'bcrypt';
 import { Op } from 'sequelize';
 import {
