@@ -18,3 +18,10 @@ SMTP_SERVER=smtp.sendgrid.net
 SMTP_USER=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
 SMTP_PASS=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
 SEND_GRID_KEY=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
+
+
+username: afrilens_victor
+password: Bullyvax2022
+
+url: afrilens.com.ng
+    "prebuild": "rimraf dist",
